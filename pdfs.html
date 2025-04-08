@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>📚 PDF Library</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #00ff88;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #00ff88;
+      text-shadow: 0 0 10px #00ff88;
+      margin-bottom: 30px;
+    }
+
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    .pdf-item {
+      background-color: #111;
+      border: 2px solid #00ff88;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 10px #00ff88;
+      transition: transform 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100px; /* Ensures all items have same base height */
+    }
+
+    .pdf-item:hover {
+      transform: scale(1.03);
+      background-color: #1a1a1a;
+    }
+
+    .pdf-item a {
+      color: #00ff88;
+      font-size: 1.1rem;
+      text-decoration: none;
+      font-weight: bold;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📚 Wild Hackers PDF Library</h1>
+
+  <div class="pdf-grid">
+    <div class="pdf-item"><a href="pdfs/introduction.pdf" download>PDF 1: mad</a></div>
+    <div class="pdf-item"><a href="pdfs/basics.pdf" download>PDF 2: Basics</a></div>
+    <div class="pdf-item"><a href="pdfs/html.pdf" download>PDF 3: HTML</a></div>
+    <div class="pdf-item"><a href="pdfs/css.pdf" download>PDF 4: CSS</a></div>
+    <div class="pdf-item"><a href="pdfs/javascript.pdf" download>PDF 5: JavaScript</a></div>
+    <div class="pdf-item"><a href="pdfs/git_github.pdf" download>PDF 6: Git & GitHub</a></div>
+    <div class="pdf-item"><a href="pdfs/python.pdf" download>PDF 7: Python</a></div>
+    <div class="pdf-item"><a href="pdfs/sql.pdf" download>PDF 8: SQL</a></div>
+    <div class="pdf-item"><a href="pdfs/java.pdf" download>PDF 9: Java</a></div>
+    <div class="pdf-item"><a href="pdfs/networking.pdf" download>PDF 10: Networking</a></div>
+    <div class="pdf-item"><a href="pdfs/cybersecurity.pdf" download>PDF 11: Cybersecurity</a></div>
+    <div class="pdf-item"><a href="pdfs/ethical_hacking.pdf" download>PDF 12: Ethical Hacking</a></div>
+    <div class="pdf-item"><a href="pdfs/web_development.pdf" download>PDF 13: Web Dev</a></div>
+    <div class="pdf-item"><a href="pdfs/react.pdf" download>PDF 14: React</a></div>
+    <div class="pdf-item"><a href="pdfs/mongodb.pdf" download>PDF 15: MongoDB</a></div>
+    <div class="pdf-item"><a href="pdfs/linux.pdf" download>PDF 16: Linux</a></div>
+    <div class="pdf-item"><a href="pdfs/apis.pdf" download>PDF 17: APIs</a></div>
+    <div class="pdf-item"><a href="pdfs/firebase.pdf" download>PDF 18: Firebase</a></div>
+    <div class="pdf-item"><a href="pdfs/mobile_hacking.pdf" download>PDF 19: Mobile Hacking</a></div>
+    <div class="pdf-item"><a href="pdfs/final_projects.pdf" download>PDF 20: Final Projects</a></div>
+  </div>
+
+</body>
+</html>
