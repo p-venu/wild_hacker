@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <textarea id="codeArea" readonly>
+    #ElGamal Cryptosystem
+    import random
+    
+    def power(base, exp, mod):
+        return pow(base, exp, mod)
+    
+    def encrypt(p, g, y, message):
+        k = random.randint(1, p - 2)  # random ephemeral key
+        a = power(g, k, p)
+        b = [(m * power(y, k, p)) % p for m in message]
+        return a, b
+    
+    def decrypt(p, x, a, b):
+        a_pow_x = power(a, x, p)
+        a_inv = power(a_pow_x, -1, p)  # Modular inverse using pow with -1
+        return [(c * a_inv) % p for c in b]
+    
+    def to_int_list(text):
+        return [ord(char) for char in text]
+    
+    def to_text(int_list):
+        return ''.join(chr(i) for i in int_list)
+    
+    # Dynamic Input
+    p = int(input("Enter a large prime number p: "))
+    g = int(input("Enter a primitive root modulo p (g): "))
+    x = int(input("Enter private key x (1 < x < p): "))
+    message = input("Enter the message to encrypt: ")
+    
+    # Public key
+    y = power(g, x, p)
+    
+    msg_nums = to_int_list(message)
+    a, b = encrypt(p, g, y, msg_nums)
+    decrypted_nums = decrypt(p, x, a, b)
+    
+    print("Public key (p, g, y):", (p, g, y))
+    print("Cipher text (a, b):", (a, b))
+    print("Decrypted message:", to_text(decrypted_nums))
+    
+    # Example Input:
+    # Enter a large prime number p: 23
+    # Enter a primitive root modulo p (g): 5
+    # Enter private key x (1 < x < p): 6
+    # Enter the message to encrypt: hi
+    # Output:
+    # Public key (p, g, y): (23, 5, 8)
+    # Cipher text (a, b): (10, [18, 20])
+    # Decrypted message: hi
+    
+  </textarea>
+
+  <div class="controls">
+    <button onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <script>
+    function copyCode() {
+      const codeArea = document.getElementById("codeArea");
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999); // For mobile compatibility
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>
