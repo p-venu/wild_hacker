@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <textarea id="codeArea" readonly>
+    #hill cipher
+    import numpy as np
+    
+    def mod_inverse(a, m):
+        # Extended Euclidean Algorithm for modular inverse
+        for x in range(1, m):
+            if (a * x) % m == 1:
+                return x
+        raise ValueError(f"No modular inverse for {a} mod {m}")
+    
+    def matrix_mod_inverse(matrix, mod):
+        det = int(np.round(np.linalg.det(matrix))) % mod
+        inv_det = mod_inverse(det, mod)
+    
+        # Compute adjugate matrix
+        adj = np.array([[matrix[1][1], -matrix[0][1]],
+                        [-matrix[1][0], matrix[0][0]]]) % mod
+        return (inv_det * adj) % mod
+    
+    def text_to_numbers(text):
+        return [ord(char) - ord('A') for char in text]
+    
+    def numbers_to_text(numbers):
+        return ''.join(chr(int(num) % 26 + ord('A')) for num in numbers)
+    
+    def prepare_text(text):
+        text = text.upper().replace(" ", "").replace("J", "I")
+        if len(text) % 2 != 0:
+            text += 'X'
+        return text
+    
+    def hill_encrypt(plaintext, key_matrix):
+        plaintext = prepare_text(plaintext)
+        ciphertext = ""
+    
+        for i in range(0, len(plaintext), 2):
+            pair = plaintext[i:i+2]
+            vector = np.array(text_to_numbers(pair)).reshape(2, 1)
+            result = np.dot(key_matrix, vector) % 26
+            ciphertext += numbers_to_text(result.flatten())
+    
+        return ciphertext
+    
+    def hill_decrypt(ciphertext, key_matrix):
+        inv_key = matrix_mod_inverse(key_matrix, 26)
+        decrypted_text = ""
+    
+        for i in range(0, len(ciphertext), 2):
+            pair = ciphertext[i:i+2]
+            vector = np.array(text_to_numbers(pair)).reshape(2, 1)
+            result = np.dot(inv_key, vector) % 26
+            decrypted_text += numbers_to_text(result.flatten())
+    
+        return decrypted_text
+    
+    # 🔰 Dynamic Input
+    plaintext = input("Enter the message to encrypt: ")
+    key_input = input("Enter 4 integers (2x2 matrix) separated by space for key: ")
+    
+    # 🔁 Example Key: 3 3 2 5
+    key_values = list(map(int, key_input.strip().split()))
+    key_matrix = np.array(key_values).reshape(2, 2)
+    
+    # Encryption
+    encrypted = hill_encrypt(plaintext, key_matrix)
+    print("Encrypted:", encrypted)
+    
+    # Decryption
+    decrypted = hill_decrypt(encrypted, key_matrix)
+    print("Decrypted:", decrypted)
+    
+    # Example Input:
+    # Enter the message to encrypt: hi
+    # Enter 4 integers (2x2 matrix) separated by space for key: 3 3 2 5
+    # Output:
+    # Encrypted: TC
+    # Decrypted: HI
+    
+  </textarea>
+
+  <div class="controls">
+    <button onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <script>
+    function copyCode() {
+      const codeArea = document.getElementById("codeArea");
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999); // For mobile compatibility
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>

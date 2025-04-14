@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers - Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background: black;
+      color: #00ff88;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-shadow: 0 0 10px #00ff88;
+    }
+
+    .logo {
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      width: 100px;
+      transition: transform 0.3s;
+    }
+
+    .logo img:hover {
+      transform: scale(1.1);
+    }
+
+    #passwordBox {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #00ff88;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ff88;
+    }
+
+    button:hover {
+      background: #00cc66;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers</h1>
+
+  <!-- 🕵️ Logo to trigger login -->
+  <div class="logo" onclick="showPasswordBox()">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/70/User_icon_BLACK-01.png" alt="Secret Logo" />
+  </div>
+
+  <!-- 🔐 Password Input -->
+  <div id="passwordBox">
+    <input type="password" id="adminPass" placeholder="Enter Secret Password..." onkeydown="checkEnter(event)" />
+    <button onclick="login()">Hack</button>
+    <div class="error" id="errorText"></div>
+  </div>
+
+  <script>
+    function showPasswordBox() {
+      document.getElementById("passwordBox").style.display = "flex";
+      document.getElementById("adminPass").focus();
+    }
+
+    function checkEnter(event) {
+      if (event.key === "Enter") {
+        login();
+      }
+    }
+
+    function login() {
+      const password = document.getElementById("adminPass").value;
+      const errorText = document.getElementById("errorText");
+
+      if (password === "4321") {
+        window.location.href = "http://127.0.0.1:5500/secondpage.html"; // ✅ Updated URL
+      } else {
+        errorText.textContent = "Access Denied: Wrong Password!";
+      }
+    }
+  </script>
+
+</body>
+</html>

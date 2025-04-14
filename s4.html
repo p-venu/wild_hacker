@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <textarea id="codeArea" readonly>
+    #one time padding
+    import random
+    import string
+    
+    def generate_key(length):
+        return ''.join(random.choice(string.ascii_uppercase) for _ in range(length))
+    
+    def otp_encrypt(plaintext, key):
+        plaintext = plaintext.upper().replace(" ", "")
+        ciphertext = ""
+    
+        for p, k in zip(plaintext, key):
+            p_val = ord(p) - ord('A')
+            k_val = ord(k) - ord('A')
+            c_val = (p_val + k_val) % 26
+            ciphertext += chr(c_val + ord('A'))
+        
+        return ciphertext
+    
+    def otp_decrypt(ciphertext, key):
+        decrypted = ""
+    
+        for c, k in zip(ciphertext, key):
+            c_val = ord(c) - ord('A')
+            k_val = ord(k) - ord('A')
+            p_val = (c_val - k_val + 26) % 26
+            decrypted += chr(p_val + ord('A'))
+        
+        return decrypted
+    
+    
+    # 🎯 Dynamic Input
+    plaintext = input("Enter the message to encrypt (letters only): ").upper().replace(" ", "")
+    key = generate_key(len(plaintext))
+    
+    encrypted = otp_encrypt(plaintext, key)
+    decrypted = otp_decrypt(encrypted, key)
+    
+    # 🖨️ Outputs
+    print("Random Key Used:", key)
+    print("Encrypted:", encrypted)
+    print("Decrypted:", decrypted)
+    
+    # Output:
+    # Enter the message to encrypt: HELLO
+    # Output (key will vary)
+    # Random Key Used: KZPQM
+    # Encrypted: RDDSZ
+    # Decrypted: HELLO
+    
+  </textarea>
+
+  <div class="controls">
+    <button onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <script>
+    function copyCode() {
+      const codeArea = document.getElementById("codeArea");
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999); // For mobile compatibility
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>

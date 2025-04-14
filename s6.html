@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <textarea id="codeArea" readonly>
+    #S-DES (Simplified Data Encryption Standard)
+    P10 = [3, 5, 2, 7, 4, 10, 1, 9, 8, 6]
+    P8  = [6, 3, 7, 4, 8, 5, 10, 9]
+    IP  = [2, 6, 3, 1, 4, 8, 5, 7]
+    IP_INV = [4, 1, 3, 5, 7, 2, 8, 6]
+    EP  = [4, 1, 2, 3, 2, 3, 4, 1]
+    P4  = [2, 4, 3, 1]
+    
+    S0 = [[1,0,3,2],[3,2,1,0],[0,2,1,3],[3,1,3,2]]
+    S1 = [[0,1,2,3],[2,0,1,3],[3,0,1,0],[2,1,0,3]]
+    
+    def permute(bits, table):
+        return [bits[i-1] for i in table]
+    
+    def left_shift(bits, n):
+        return bits[n:] + bits[:n]
+    
+    def xor(bits1, bits2):
+        return [b1 ^ b2 for b1, b2 in zip(bits1, bits2)]
+    
+    def sbox(input_bits, sbox):
+        row = (input_bits[0] << 1) + input_bits[3]
+        col = (input_bits[1] << 1) + input_bits[2]
+        value = sbox[row][col]
+        return [value >> 1 & 1, value & 1]
+    
+    def generate_keys(key):
+        key = permute(key, P10)
+        left, right = key[:5], key[5:]
+        left = left_shift(left, 1)
+        right = left_shift(right, 1)
+        k1 = permute(left + right, P8)
+        left = left_shift(left, 2)
+        right = left_shift(right, 2)
+        k2 = permute(left + right, P8)
+        return k1, k2
+    
+    def fk(bits, key):
+        left, right = bits[:4], bits[4:]
+        temp = permute(right, EP)
+        temp = xor(temp, key)
+        sbox_out = sbox(temp[:4], S0) + sbox(temp[4:], S1)
+        sbox_out = permute(sbox_out, P4)
+        return xor(left, sbox_out) + right
+    
+    def sdes_encrypt(plaintext, key):
+        k1, k2 = generate_keys(key)
+        bits = permute(plaintext, IP)
+        bits = fk(bits, k1)
+        bits = bits[4:] + bits[:4]
+        bits = fk(bits, k2)
+        return permute(bits, IP_INV)
+    
+    def sdes_decrypt(ciphertext, key):
+        k1, k2 = generate_keys(key)
+        bits = permute(ciphertext, IP)
+        bits = fk(bits, k2)
+        bits = bits[4:] + bits[:4]
+        bits = fk(bits, k1)
+        return permute(bits, IP_INV)
+    
+    def to_bits(s):
+        return [int(b) for b in s]
+    
+    def from_bits(bits):
+        return ''.join(str(b) for b in bits)
+    
+    # Dynamic Input
+    plaintext = input("Enter 8-bit plaintext (e.g. 10101010): ")
+    key = input("Enter 10-bit key (e.g. 1010000010): ")
+    
+    plaintext_bits = to_bits(plaintext)
+    key_bits = to_bits(key)
+    
+    cipher_bits = sdes_encrypt(plaintext_bits, key_bits)
+    decrypted_bits = sdes_decrypt(cipher_bits, key_bits)
+    
+    print("Encrypted:", from_bits(cipher_bits))
+    print("Decrypted:", from_bits(decrypted_bits))
+    
+    # Example Input:
+    # Enter 8-bit plaintext: 10101010
+    # Enter 10-bit key: 1010000010
+    # Output:
+    # Encrypted: 10001101
+    # Decrypted: 10101010
+    
+  </textarea>
+
+  <div class="controls">
+    <button onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <script>
+    function copyCode() {
+      const codeArea = document.getElementById("codeArea");
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999); // For mobile compatibility
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>
