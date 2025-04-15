@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <textarea id="codeArea" readonly>
+    # image recognition system 
+
+    # pip install scikit-learn
+    # pip install matplotlib
+    
+    from sklearn import datasets
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.svm import SVC
+    from sklearn.metrics import classification_report, accuracy_score
+    import matplotlib.pyplot as plt
+    
+    # Load the digits dataset (8x8 images of numbers 0–9)
+    digits = datasets.load_digits()
+    
+    # Features and labels
+    X = digits.images.reshape((len(digits.images), -1))  # Flatten 8x8 images to 64-length vectors
+    y = digits.target
+    
+    # Train-test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    # Standardize features
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    
+    # Train SVM classifier
+    model = SVC(kernel='rbf', gamma=0.05)
+    model.fit(X_train, y_train)
+    
+    # Predict
+    y_pred = model.predict(X_test)
+    
+    # Accuracy
+    print("✅ Accuracy:", accuracy_score(y_test, y_pred))
+    print("\n📊 Classification Report:\n", classification_report(y_test, y_pred))
+    
+    # Visualize a few test predictions
+    plt.figure(figsize=(10, 4))
+    for index, (image, label) in enumerate(zip(digits.images[10:15], y_pred[:5])):
+        plt.subplot(1, 5, index + 1)
+        plt.imshow(image, cmap=plt.cm.gray_r)
+        plt.title(f"Pred: {label}")
+        plt.axis('off')
+    plt.tight_layout()
+    plt.show()
+    
+    # Output:
+    # ✅ Accuracy: 0.9861111111111112
+    # 📊 Classification Report:
+    #               precision    recall  f1-score   support
+    #            0       1.00      1.00      1.00        36
+    #            1       1.00      1.00      1.00        34
+    #            2       1.00      0.97      0.99        35
+    #            3       0.97      0.94      0.96        33
+    #            4       1.00      1.00      1.00        38
+    #            5       0.97      1.00      0.99        36
+    #            6       1.00      1.00      1.00        37
+    #            7       1.00      0.97      0.99        36
+    #            8       0.94      0.97      0.96        35
+    #            9       0.94      0.97      0.96        40
+    # 
+    #       accuracy                           0.99       360
+    #      macro avg       0.98      0.98      0.98       360
+    #   weighted avg       0.99      0.99      0.99       360
+    
+  </textarea>
+
+  <div class="controls">
+    <button onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <script>
+    function copyCode() {
+      const codeArea = document.getElementById("codeArea");
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999); // For mobile compatibility
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>
