@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <textarea id="codeArea" readonly>
+    #creating different led patterns using loops and functions 10
+
+
+    import RPi.GPIO as GPIO
+    import time
+    
+    def ledPatternOne():
+        for i in range(10, 14):
+            GPIO.output(i, GPIO.HIGH)
+            time.sleep(1)
+        for i in range(10, 14):
+            GPIO.output(i, GPIO.LOW)
+            time.sleep(1)
+    
+    def ledPatternTwo():
+        for i in range(10, 14):
+            GPIO.output(i, GPIO.HIGH)
+            time.sleep(1)
+            GPIO.output(i, GPIO.LOW)
+            time.sleep(1)
+    
+    def ledPatternThree():
+        for i in range(13, 9, -1):
+            GPIO.output(i, GPIO.HIGH)
+            time.sleep(1)
+        for i in range(13, 9, -1):
+            GPIO.output(i, GPIO.LOW)
+            time.sleep(1)
+    
+    def ledPatternFour():
+        for i in range(10, 14, 2):
+            GPIO.output(i, GPIO.HIGH)
+            time.sleep(1)
+        for i in range(11, 14, 2):
+            GPIO.output(i, GPIO.HIGH)
+            time.sleep(1)
+        for i in range(10, 14, 2):
+            GPIO.output(i, GPIO.LOW)
+            time.sleep(1)
+        for i in range(11, 14, 2):
+            GPIO.output(i, GPIO.LOW)
+            time.sleep(1)
+    
+    def main():
+        GPIO.setmode(GPIO.BCM)
+        for i in range(10, 14):
+            GPIO.setup(i, GPIO.OUT)
+            GPIO.output(i, GPIO.LOW)
+    
+        try:
+            while True:
+                n = input("Enter 1/2/3/4 for different LED patterns: ")
+                if n == '1':
+                    ledPatternOne()
+                elif n == '2':
+                    ledPatternTwo()
+                elif n == '3':
+                    ledPatternThree()
+                elif n == '4':
+                    ledPatternFour()
+                else:
+                    print("Invalid entry")
+    
+        except KeyboardInterrupt:
+            print("\nExiting the program\n")
+            GPIO.cleanup()
+            exit()
+    
+    main()
+    
+  </textarea>
+
+  <div class="controls">
+    <button onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <script>
+    function copyCode() {
+      const codeArea = document.getElementById("codeArea");
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999); // For mobile compatibility
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>
