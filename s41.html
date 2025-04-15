@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+
+    textarea {
+      width: 100%;
+      height: 400px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 20px;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <textarea id="codeArea" readonly>
+    #control relay using ultrasonic sensors 5
+
+
+    import RPi.GPIO as GPIO
+    import time
+    
+    trigPin = 15
+    echoPin = 14
+    relayPin = 26
+    
+    def distance():
+        GPIO.output(trigPin, True)
+        time.sleep(0.00001)
+        GPIO.output(trigPin, False)
+    
+        while GPIO.input(echoPin) == 0:
+            pulse_start = time.time()
+    
+        while GPIO.input(echoPin) == 1:
+            pulse_end = time.time()
+    
+        try:
+            pulse_duration = pulse_end - pulse_start
+        except:
+            print("Calibrating")
+            return 2000
+    
+        distance = pulse_duration * 17150
+        distance = round(distance + 1.15, 2)
+    
+        return distance
+    
+    def main():
+        GPIO.setmode(GPIO.BCM)
+    
+        # Set GPIO direction (IN / OUT)
+        GPIO.setup(relayPin, GPIO.OUT)
+        GPIO.setup(trigPin, GPIO.OUT)
+        GPIO.setup(echoPin, GPIO.IN)
+    
+        prevDist = 10  # Arbitrary initial value
+    
+        try:
+            while True:
+                dist = distance()
+                print("Measured Distance = {} cm".format(dist))
+    
+                if abs(dist - prevDist) > 50:
+                    prevDist = dist
+                    continue
+    
+                if dist > 50:
+                    GPIO.output(relayPin, GPIO.HIGH)
+                else:
+                    GPIO.output(relayPin, GPIO.LOW)
+    
+                time.sleep(0.5)
+                prevDist = dist
+    
+        except KeyboardInterrupt:
+            print("\nExiting program\n")
+            GPIO.cleanup()
+            exit()
+    
+    main()
+    
+  </textarea>
+
+  <div class="controls">
+    <button onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <script>
+    function copyCode() {
+      const codeArea = document.getElementById("codeArea");
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999); // For mobile compatibility
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>
