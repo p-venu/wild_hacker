@@ -62,79 +62,78 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #different rgb patterns based on user input 3
+    #different rgb user input
+import RPi.GPIO as GPIO
+import time
 
+R_LED = 11
+G_LED = 12
+B_LED = 13
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
 
-    import RPi.GPIO as GPIO
-    import time
-    
-    R_LED = 11
-    G_LED = 12
-    B_LED = 13
-    
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-    
-    for x in range(10, 14):
-        GPIO.setup(x, GPIO.OUT)
-    
-    try:
-        while True:
-            print("Enter one of the following colours:")
-            print("Red | Green | Blue")
-            print("Magenta | Yellow | Cyan")
-            print("White | OFF")
-            
-            colour = input("Enter the colour: ")
-    
-            if colour.lower() == "red":
-                GPIO.output(R_LED, GPIO.HIGH)
-                GPIO.output(G_LED, GPIO.LOW)
-                GPIO.output(B_LED, GPIO.LOW)
-    
-            elif colour.lower() == "green":
-                GPIO.output(R_LED, GPIO.LOW)
-                GPIO.output(G_LED, GPIO.HIGH)
-                GPIO.output(B_LED, GPIO.LOW)
-    
-            elif colour.lower() == "blue":
-                GPIO.output(R_LED, GPIO.LOW)
-                GPIO.output(G_LED, GPIO.LOW)
-                GPIO.output(B_LED, GPIO.HIGH)
-    
-            elif colour.lower() == "magenta":
-                GPIO.output(R_LED, GPIO.HIGH)
-                GPIO.output(G_LED, GPIO.LOW)
-                GPIO.output(B_LED, GPIO.HIGH)
-    
-            elif colour.lower() == "yellow":
-                GPIO.output(R_LED, GPIO.HIGH)
-                GPIO.output(G_LED, GPIO.HIGH)
-                GPIO.output(B_LED, GPIO.LOW)
-    
-            elif colour.lower() == "cyan":
-                GPIO.output(R_LED, GPIO.LOW)
-                GPIO.output(G_LED, GPIO.HIGH)
-                GPIO.output(B_LED, GPIO.HIGH)
-    
-            elif colour.lower() == "white":
-                GPIO.output(R_LED, GPIO.HIGH)
-                GPIO.output(G_LED, GPIO.HIGH)
-                GPIO.output(B_LED, GPIO.HIGH)
-    
-            elif colour.lower() == "off":
-                GPIO.output(R_LED, GPIO.LOW)
-                GPIO.output(G_LED, GPIO.LOW)
-                GPIO.output(B_LED, GPIO.LOW)
-    
-            else:
-                print("Invalid Option... Enter again")
-    
-    except KeyboardInterrupt:
-        print("\nExiting program\n")
-        GPIO.cleanup()
-        exit()
+# Setup pins
+for x in [R_LED, G_LED, B_LED]:
+    GPIO.setup(x, GPIO.OUT)
+
+try:
+    while True:
+        print("\nEnter one of the following colours:")
+        print("Red | Green | Blue")
+        print("Magenta | Yellow | Cyan")
+        print("White | OFF")
+
+        colour = input("Enter the colour: ").strip().lower()
+
+        if colour == "red":
+            GPIO.output(R_LED, GPIO.HIGH)
+            GPIO.output(G_LED, GPIO.LOW)
+            GPIO.output(B_LED, GPIO.LOW)
+
+        elif colour == "green":
+            GPIO.output(R_LED, GPIO.LOW)
+            GPIO.output(G_LED, GPIO.HIGH)
+            GPIO.output(B_LED, GPIO.LOW)
+
+        elif colour == "blue":
+            GPIO.output(R_LED, GPIO.LOW)
+            GPIO.output(G_LED, GPIO.LOW)
+            GPIO.output(B_LED, GPIO.HIGH)
+
+        elif colour == "magenta":
+            GPIO.output(R_LED, GPIO.HIGH)
+            GPIO.output(G_LED, GPIO.LOW)
+            GPIO.output(B_LED, GPIO.HIGH)
+
+        elif colour == "yellow":
+            GPIO.output(R_LED, GPIO.HIGH)
+            GPIO.output(G_LED, GPIO.HIGH)
+            GPIO.output(B_LED, GPIO.LOW)
+
+        elif colour == "cyan":
+            GPIO.output(R_LED, GPIO.LOW)
+            GPIO.output(G_LED, GPIO.HIGH)
+            GPIO.output(B_LED, GPIO.HIGH)
+
+        elif colour == "white":
+            GPIO.output(R_LED, GPIO.HIGH)
+            GPIO.output(G_LED, GPIO.HIGH)
+            GPIO.output(B_LED, GPIO.HIGH)
+
+        elif colour == "off":
+            GPIO.output(R_LED, GPIO.LOW)
+            GPIO.output(G_LED, GPIO.LOW)
+            GPIO.output(B_LED, GPIO.LOW)
+
+        else:
+            print("Invalid Option... Please enter a valid colour")
+
+except KeyboardInterrupt:
+    print("\nExiting program\n")
+    GPIO.cleanup()
+    exit()
+
     
   </textarea>
 
