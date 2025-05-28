@@ -65,41 +65,52 @@
     #control led brightness bu sending pwm values using mqtt 8
 
 
-    import paho.mqtt.client as mqtt
-    import RPi.GPIO as GPIO
-    
-    ledPin = 6
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(ledPin, GPIO.OUT)
-    
-    pwm = GPIO.PWM(ledPin, 100)  # 100Hz frequency
-    pwm.start(0)
-    pwm.ChangeDutyCycle(100)
-    
-    # MQTT connect callback
-    def on_connect(client, userdata, flags, rc):
-        print("Connected with result code", str(rc))
-        client.subscribe("TOTIF/RPi/PWM")
-    
-    # MQTT message callback
-    def on_message(client, userdata, message):
-        data = str(message.payload.decode("utf-8")).strip()
-        print("Data received on topic:", message.topic, "- Message:", data)
-        pwm.ChangeDutyCycle(int(data))
-    
-    # MQTT client setup
-    client = mqtt.Client()
-    client.connect("broker.hivemq.com")
-    
-    client.on_connect = on_connect
-    client.on_message = on_message
-    
+import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
+
+ledPin = 6
+
+GPIO.setmode(GPIO.BCM)          # Use BCM pin numbering
+GPIO.setup(ledPin, GPIO.OUT)    # Set pin as output
+
+pwm = GPIO.PWM(ledPin, 100)     # Initialize PWM at 100Hz
+pwm.start(0)                    # Start PWM with 0% duty cycle (LED off)
+
+# MQTT connect callback
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code", str(rc))
+    client.subscribe("TOTIF/RPi/PWM")  # Subscribe to PWM control topic
+
+# MQTT message callback
+def on_message(client, userdata, message):
+    data = message.payload.decode("utf-8").strip()
+    print(f"Data received on topic: {message.topic} - Message: {data}")
+
     try:
-        client.loop_forever()
-    except KeyboardInterrupt:
-        print("\nExiting the program\n")
-        GPIO.cleanup()
-        exit()
+        duty_cycle = int(data)
+        if 0 <= duty_cycle <= 100:
+            pwm.ChangeDutyCycle(duty_cycle)
+            print(f"LED brightness set to {duty_cycle}%")
+        else:
+            print("Error: PWM value must be between 0 and 100")
+    except ValueError:
+        print("Error: Invalid PWM value received, must be an integer")
+
+# MQTT client setup
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+
+client.connect("broker.hivemq.com")
+
+try:
+    print("Starting MQTT client loop. Press Ctrl+C to exit.")
+    client.loop_forever()
+except KeyboardInterrupt:
+    print("\nExiting the program\n")
+    pwm.stop()
+    GPIO.cleanup()
+
     
   </textarea>
 
