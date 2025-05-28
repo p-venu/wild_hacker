@@ -65,72 +65,79 @@
     #creating different led patterns using loops and functions 10
 
 
-    import RPi.GPIO as GPIO
-    import time
-    
-    def ledPatternOne():
-        for i in range(10, 14):
-            GPIO.output(i, GPIO.HIGH)
-            time.sleep(1)
-        for i in range(10, 14):
-            GPIO.output(i, GPIO.LOW)
-            time.sleep(1)
-    
-    def ledPatternTwo():
-        for i in range(10, 14):
-            GPIO.output(i, GPIO.HIGH)
-            time.sleep(1)
-            GPIO.output(i, GPIO.LOW)
-            time.sleep(1)
-    
-    def ledPatternThree():
-        for i in range(13, 9, -1):
-            GPIO.output(i, GPIO.HIGH)
-            time.sleep(1)
-        for i in range(13, 9, -1):
-            GPIO.output(i, GPIO.LOW)
-            time.sleep(1)
-    
-    def ledPatternFour():
-        for i in range(10, 14, 2):
-            GPIO.output(i, GPIO.HIGH)
-            time.sleep(1)
-        for i in range(11, 14, 2):
-            GPIO.output(i, GPIO.HIGH)
-            time.sleep(1)
-        for i in range(10, 14, 2):
-            GPIO.output(i, GPIO.LOW)
-            time.sleep(1)
-        for i in range(11, 14, 2):
-            GPIO.output(i, GPIO.LOW)
-            time.sleep(1)
-    
-    def main():
-        GPIO.setmode(GPIO.BCM)
-        for i in range(10, 14):
-            GPIO.setup(i, GPIO.OUT)
-            GPIO.output(i, GPIO.LOW)
-    
-        try:
-            while True:
-                n = input("Enter 1/2/3/4 for different LED patterns: ")
-                if n == '1':
-                    ledPatternOne()
-                elif n == '2':
-                    ledPatternTwo()
-                elif n == '3':
-                    ledPatternThree()
-                elif n == '4':
-                    ledPatternFour()
-                else:
-                    print("Invalid entry")
-    
-        except KeyboardInterrupt:
-            print("\nExiting the program\n")
-            GPIO.cleanup()
-            exit()
-    
+import RPi.GPIO as GPIO
+import time
+
+def ledPatternOne():
+    # Turn on all LEDs sequentially, then turn off all sequentially
+    for i in range(10, 14):
+        GPIO.output(i, GPIO.HIGH)
+        time.sleep(1)
+    for i in range(10, 14):
+        GPIO.output(i, GPIO.LOW)
+        time.sleep(1)
+
+def ledPatternTwo():
+    # Turn on and off each LED one by one
+    for i in range(10, 14):
+        GPIO.output(i, GPIO.HIGH)
+        time.sleep(1)
+        GPIO.output(i, GPIO.LOW)
+        time.sleep(1)
+
+def ledPatternThree():
+    # Turn on all LEDs in reverse order, then off in reverse order
+    for i in range(13, 9, -1):
+        GPIO.output(i, GPIO.HIGH)
+        time.sleep(1)
+    for i in range(13, 9, -1):
+        GPIO.output(i, GPIO.LOW)
+        time.sleep(1)
+
+def ledPatternFour():
+    # Turn on LEDs in even positions, then odd, then turn them off in same order
+    for i in range(10, 14, 2):
+        GPIO.output(i, GPIO.HIGH)
+        time.sleep(1)
+    for i in range(11, 14, 2):
+        GPIO.output(i, GPIO.HIGH)
+        time.sleep(1)
+    for i in range(10, 14, 2):
+        GPIO.output(i, GPIO.LOW)
+        time.sleep(1)
+    for i in range(11, 14, 2):
+        GPIO.output(i, GPIO.LOW)
+        time.sleep(1)
+
+def main():
+    GPIO.setmode(GPIO.BCM)
+    # Setup all pins 10 to 13 as output and set LOW initially
+    for i in range(10, 14):
+        GPIO.setup(i, GPIO.OUT)
+        GPIO.output(i, GPIO.LOW)
+
+    try:
+        while True:
+            n = input("Enter 1/2/3/4 for different LED patterns: ")
+            if n == '1':
+                ledPatternOne()
+            elif n == '2':
+                ledPatternTwo()
+            elif n == '3':
+                ledPatternThree()
+            elif n == '4':
+                ledPatternFour()
+            else:
+                print("Invalid entry")
+
+    except KeyboardInterrupt:
+        print("\nExiting the program\n")
+        GPIO.cleanup()
+        exit()
+
+if __name__ == "__main__":
     main()
+
     
   </textarea>
 
