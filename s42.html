@@ -65,46 +65,49 @@
     #controlling actuators using mqtt 6
 
 
-    import paho.mqtt.client as mqtt
-    import RPi.GPIO as GPIO
-    
-    relayPin = 26
-    
-    GPIO.setmode(GPIO.BCM)  # Using BCM numbering
-    GPIO.setup(relayPin, GPIO.OUT)
-    
-    # When connected to the MQTT broker
-    def on_connect(client, userdata, flags, rc):
-        print("Connected with result code", str(rc))
-        client.subscribe("IOTIF/RPI")
-    
-    # When a message is received
-    def on_message(client, userdata, message):
-        data = str(message.payload.decode("utf-8")).strip()
-        print("Data received on topic:", message.topic, " | Message:", data)
-    
-        if data.upper() == "ON":
-            GPIO.output(relayPin, True)
-            print("Relay On")
-        elif data.upper() == "OFF":
-            GPIO.output(relayPin, False)
-            print("Relay Off")
-        else:
-            print("Invalid command. Try sending ON or OFF")
-    
-    # MQTT client setup
-    client = mqtt.Client()
-    client.connect("broker.hivemq.com")
-    
-    client.on_connect = on_connect
-    client.on_message = on_message
-    
-    try:
-        client.loop_forever()
-    except KeyboardInterrupt:
-        print("\nExiting the program\n")
-        GPIO.cleanup()
-        exit()
+import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
+
+relayPin = 26
+
+GPIO.setmode(GPIO.BCM)  # Using BCM pin numbering
+GPIO.setup(relayPin, GPIO.OUT)
+
+# Called when the client connects to the MQTT broker
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code", str(rc))
+    client.subscribe("IOTIF/RPI")  # Subscribe to topic
+
+# Called when a message is received on a subscribed topic
+def on_message(client, userdata, message):
+    data = str(message.payload.decode("utf-8")).strip()
+    print(f"Data received on topic: {message.topic} | Message: {data}")
+
+    if data.upper() == "ON":
+        GPIO.output(relayPin, True)
+        print("Relay On")
+    elif data.upper() == "OFF":
+        GPIO.output(relayPin, False)
+        print("Relay Off")
+    else:
+        print("Invalid command. Try sending ON or OFF")
+
+# MQTT client setup
+client = mqtt.Client()
+
+client.on_connect = on_connect
+client.on_message = on_message
+
+# Connect to public HiveMQ broker
+client.connect("broker.hivemq.com")
+
+try:
+    print("Starting MQTT client loop. Press Ctrl+C to exit.")
+    client.loop_forever()
+except KeyboardInterrupt:
+    print("\nExiting the program\n")
+    GPIO.cleanup()
+
     
   </textarea>
 
