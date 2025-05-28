@@ -65,68 +65,89 @@
     #control relay using ultrasonic sensors 5
 
 
-    import RPi.GPIO as GPIO
-    import time
-    
-    trigPin = 15
-    echoPin = 14
-    relayPin = 26
-    
-    def distance():
-        GPIO.output(trigPin, True)
-        time.sleep(0.00001)
-        GPIO.output(trigPin, False)
-    
-        while GPIO.input(echoPin) == 0:
-            pulse_start = time.time()
-    
-        while GPIO.input(echoPin) == 1:
-            pulse_end = time.time()
-    
-        try:
-            pulse_duration = pulse_end - pulse_start
-        except:
-            print("Calibrating")
-            return 2000
-    
-        distance = pulse_duration * 17150
-        distance = round(distance + 1.15, 2)
-    
-        return distance
-    
-    def main():
-        GPIO.setmode(GPIO.BCM)
-    
-        # Set GPIO direction (IN / OUT)
-        GPIO.setup(relayPin, GPIO.OUT)
-        GPIO.setup(trigPin, GPIO.OUT)
-        GPIO.setup(echoPin, GPIO.IN)
-    
-        prevDist = 10  # Arbitrary initial value
-    
-        try:
-            while True:
-                dist = distance()
-                print("Measured Distance = {} cm".format(dist))
-    
-                if abs(dist - prevDist) > 50:
-                    prevDist = dist
-                    continue
-    
-                if dist > 50:
-                    GPIO.output(relayPin, GPIO.HIGH)
-                else:
-                    GPIO.output(relayPin, GPIO.LOW)
-    
-                time.sleep(0.5)
+import RPi.GPIO as GPIO
+import time
+
+# Define GPIO pins
+trigPin = 15
+echoPin = 14
+relayPin = 26
+
+def distance():
+    # Trigger a 10us pulse on the trigPin to initiate measurement
+    GPIO.output(trigPin, True)
+    time.sleep(0.00001)
+    GPIO.output(trigPin, False)
+
+    # Wait for echo start
+    pulse_start = time.time()
+    timeout_start = pulse_start
+    while GPIO.input(echoPin) == 0:
+        pulse_start = time.time()
+        # Timeout in case sensor does not respond
+        if pulse_start - timeout_start > 0.02:  # 20 ms timeout
+            print("Timeout waiting for echo start")
+            return None
+
+    # Wait for echo end
+    pulse_end = time.time()
+    timeout_start = pulse_end
+    while GPIO.input(echoPin) == 1:
+        pulse_end = time.time()
+        # Timeout in case sensor does not respond
+        if pulse_end - timeout_start > 0.02:  # 20 ms timeout
+            print("Timeout waiting for echo end")
+            return None
+
+    pulse_duration = pulse_end - pulse_start
+
+    # Calculate distance in cm (speed of sound ~343 m/s)
+    distance_cm = pulse_duration * 17150
+    distance_cm = round(distance_cm + 1.15, 2)  # Calibration offset
+
+    return distance_cm
+
+def main():
+    GPIO.setmode(GPIO.BCM)
+
+    # Set GPIO direction (IN / OUT)
+    GPIO.setup(relayPin, GPIO.OUT)
+    GPIO.setup(trigPin, GPIO.OUT)
+    GPIO.setup(echoPin, GPIO.IN)
+
+    prevDist = 10  # Arbitrary initial value
+
+    try:
+        while True:
+            dist = distance()
+            if dist is None:
+                # If timeout or error, skip this iteration
+                continue
+
+            print(f"Measured Distance = {dist} cm")
+
+            # Ignore sudden large changes
+            if abs(dist - prevDist) > 50:
                 prevDist = dist
-    
-        except KeyboardInterrupt:
-            print("\nExiting program\n")
-            GPIO.cleanup()
-            exit()
-    
+                continue
+
+            # Control relay based on distance threshold
+            if dist > 50:
+                GPIO.output(relayPin, GPIO.HIGH)  # Relay ON
+            else:
+                GPIO.output(relayPin, GPIO.LOW)   # Relay OFF
+
+            time.sleep(0.5)
+            prevDist = dist
+
+    except KeyboardInterrupt:
+        print("\nExiting program\n")
+        GPIO.cleanup()
+        exit()
+
+if __name__ == "__main__":
     main()
+
     
   </textarea>
 
