@@ -62,41 +62,41 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #blink led 2
+    # blink_led.py
 
+import RPi.GPIO as GPIO
+import time
 
+# Set GPIO mode to BCM (Broadcom pin numbering)
+GPIO.setmode(GPIO.BCM)
 
-    import RPi.GPIO as GPIO
-    import time
-    
-    # Set GPIO mode
-    GPIO.setmode(GPIO.BCM)
-    
-    # Define LED pins
-    ledpinOne = 12
-    ledpinTwo = 13
-    
-    # Set up both pins as output
-    GPIO.setup(ledpinOne, GPIO.OUT)
-    GPIO.setup(ledpinTwo, GPIO.OUT)
-    
-    try:
-        while True:
-            GPIO.output(ledpinOne, GPIO.HIGH)  # Turn LED1 ON
-            GPIO.output(ledpinTwo, GPIO.LOW)   # Turn LED2 OFF
-            time.sleep(1)
-    
-            GPIO.output(ledpinOne, GPIO.LOW)   # Turn LED1 OFF
-            GPIO.output(ledpinTwo, GPIO.HIGH)  # Turn LED2 ON
-            time.sleep(1)
-    
-    except KeyboardInterrupt:
-        print("\nProgram stopped by user\n")
-        GPIO.cleanup()
-        exit()
-    
-    # Output:
-    # LED1 and LED2 will blink alternately every 1 second until Ctrl+C is pressed.
+# Define LED pins
+ledpinOne = 12
+ledpinTwo = 13
+
+# Set up both pins as outputs
+GPIO.setup(ledpinOne, GPIO.OUT)
+GPIO.setup(ledpinTwo, GPIO.OUT)
+
+try:
+    while True:
+        GPIO.output(ledpinOne, GPIO.HIGH)  # Turn LED1 ON
+        GPIO.output(ledpinTwo, GPIO.LOW)   # Turn LED2 OFF
+        time.sleep(1)
+
+        GPIO.output(ledpinOne, GPIO.LOW)   # Turn LED1 OFF
+        GPIO.output(ledpinTwo, GPIO.HIGH)  # Turn LED2 ON
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("\nProgram stopped by user\n")
+    GPIO.cleanup()
+
+# Output:
+# - LED on GPIO 12 and LED on GPIO 13 will blink alternately every 1 second.
+# - The program runs until Ctrl+C is pressed.
+# - On exit, GPIO pins are cleaned up and LEDs are turned off safely.
+
     
   </textarea>
 
