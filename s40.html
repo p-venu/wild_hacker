@@ -65,35 +65,35 @@
     #controlling brightness of led using pwm 4
 
 
-    import RPi.GPIO as GPIO
-    import time
-    
-    ledPin = 18
-    
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(ledPin, GPIO.OUT)
-    
-    pwm = GPIO.PWM(ledPin, 100)  # Set PWM on ledPin at 100Hz
-    pwm.start(0)  # Start PWM with 0% duty cycle
-    
-    try:
-        while True:
-            # Increasing brightness
-            for i in range(100):
-                pwm.ChangeDutyCycle(i)
-                time.sleep(0.2)
-            
-            # Decreasing brightness
-            for i in range(100, 0, -1):
-                pwm.ChangeDutyCycle(i)
-                time.sleep(0.2)
-    
-    except KeyboardInterrupt:
-        pwm.stop()
-        print("\nExiting program\n")
-        GPIO.cleanup()
-        exit()
+import RPi.GPIO as GPIO
+import time
+
+ledPin = 18
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)        # Use BCM pin numbering
+GPIO.setup(ledPin, GPIO.OUT)  # Set pin as output
+
+pwm = GPIO.PWM(ledPin, 100)   # Initialize PWM on pin 18 at 100Hz frequency
+pwm.start(0)                  # Start PWM with 0% duty cycle (LED off)
+
+try:
+    while True:
+        # Gradually increase brightness (0% to 99%)
+        for duty_cycle in range(100):
+            pwm.ChangeDutyCycle(duty_cycle)
+            time.sleep(0.02)  # Adjusted to 0.02s for smoother transition
+        
+        # Gradually decrease brightness (100% to 1%)
+        for duty_cycle in range(100, 0, -1):
+            pwm.ChangeDutyCycle(duty_cycle)
+            time.sleep(0.02)  # Same smoother timing
+
+except KeyboardInterrupt:
+    pwm.stop()               # Stop PWM
+    print("\nExiting program\n")
+    GPIO.cleanup()           # Clean up GPIO pins
+
     
   </textarea>
 
