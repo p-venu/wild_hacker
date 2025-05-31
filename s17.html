@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+      margin-bottom: 40px;
+    }
+
+    .code-block {
+      margin-bottom: 40px;
+    }
+
+    .code-label {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #00ffff;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 5px;
+      white-space: pre;
+      overflow-x: auto;
+      resize: none;
+    }
+
+    textarea[readonly] {
+      cursor: default;
+    }
+
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <!-- Code Blocks -->
+  <div class="code-block">
+    <div class="code-label">MainActivity.java</div>
+    <textarea id="code1" readonly>
+package com.example.sms;
+import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
+    EditText phonenumber, message;
+    Button send;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        send = findViewById(R.id.button);
+        phonenumber = findViewById(R.id.editText);
+        message = findViewById(R.id.editText2);
+        send.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                String number = phonenumber.getText().toString();
+                String msg = message.getText().toString();
+                if (isValidIndianNumber(number)) {
+                    try {
+                        SmsManager smsManager = SmsManager.getDefault();
+                        smsManager.sendTextMessage(number, null, msg, null, null);
+                        Toast.makeText(getApplicationContext(), "Message Sent",
+                                Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), "Failed to send message",
+                                Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please enter a valid Indian number",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+    private boolean isValidIndianNumber(String number) {
+        return number.startsWith("+91");
+    }
+}
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code1')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">activity_main.xml</div>
+    <textarea id="code2" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="140dp"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Enter number"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Enter message"
+        android:inputType="textPersonName" />
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:text="SEND" />
+</LinearLayout>
+
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code2')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">AndroidManifest</div>
+    <textarea id="code3" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.sms">
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <dist:module dist:instant="true" />
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Sms">
+        <activity
+            android:name="com.example.sms.MainActivity"
+            android:exported="true"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code3')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">colors.xml</div>
+    <textarea id="code4" readonly>
+no color
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code4')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">strings.xml</div>
+    <textarea id="code5" readonly>
+no string
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code5')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">build.gradle (Module :app)</div>
+    <textarea id="code6" readonly>
+no build
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code6')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(id) {
+      const codeArea = document.getElementById(id);
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>

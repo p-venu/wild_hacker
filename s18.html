@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+      margin-bottom: 40px;
+    }
+
+    .code-block {
+      margin-bottom: 40px;
+    }
+
+    .code-label {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #00ffff;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 5px;
+      white-space: pre;
+      overflow-x: auto;
+      resize: none;
+    }
+
+    textarea[readonly] {
+      cursor: default;
+    }
+
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <!-- Code Blocks -->
+  <div class="code-block">
+    <div class="code-label">MainActivity.java</div>
+    <textarea id="code1" readonly>
+package com.example.audio;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.media.MediaRecorder;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import java.io.IOException;
+public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_PERMISSION_CODE = 100;
+    private MediaRecorder mediaRecorder;
+    private String audioFilePath;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        // Request necessary permissions
+        requestPermissions();
+        // Set the path to store the audio file
+        audioFilePath = getExternalCacheDir().getAbsolutePath() + "/audio.3gp";
+    }
+    private void requestPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !=
+                PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new
+                    String[]{Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
+        }
+    }
+    public void startRecording(View view) {
+        try {
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setOutputFile(audioFilePath);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+            // Toggle visibility of buttons
+            Button startButton = findViewById(R.id.startRecordingButton);
+            Button stopButton = findViewById(R.id.stopRecordingButton);
+            startButton.setVisibility(View.GONE);
+            stopButton.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void stopRecording(View view) {
+        mediaRecorder.stop();
+        mediaRecorder.release();
+        mediaRecorder = null;
+        // Toggle visibility of buttons
+        Button startButton = findViewById(R.id.startRecordingButton);
+        Button stopButton = findViewById(R.id.stopRecordingButton);
+        startButton.setVisibility(View.VISIBLE);
+        stopButton.setVisibility(View.GONE);
+        Toast.makeText(this, "Recording stopped", Toast.LENGTH_SHORT).show();
+    }
+}
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code1')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">activity_main.xml</div>
+    <textarea id="code2" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <Button
+        android:id="@+id/startRecordingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Recording"
+        android:layout_centerInParent="true"
+        android:onClick="startRecording" />
+    <Button
+        android:id="@+id/stopRecordingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Recording"
+        android:layout_below="@id/startRecordingButton"
+        android:layout_centerHorizontal="true"
+        android:onClick="stopRecording"
+        android:visibility="gone" />
+</RelativeLayout>
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code2')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">AndroidManifest</div>
+    <textarea id="code3" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Audio"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code3')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">colors.xml</div>
+    <textarea id="code4" readonly>
+no color
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code4')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">strings.xml</div>
+    <textarea id="code5" readonly>
+no string
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code5')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">build.gradle (Module :app)</div>
+    <textarea id="code6" readonly>
+no build
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code6')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(id) {
+      const codeArea = document.getElementById(id);
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>
