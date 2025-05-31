@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+      margin-bottom: 40px;
+    }
+
+    .code-block {
+      margin-bottom: 40px;
+    }
+
+    .code-label {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #00ffff;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 5px;
+      white-space: pre;
+      overflow-x: auto;
+      resize: none;
+    }
+
+    textarea[readonly] {
+      cursor: default;
+    }
+
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <!-- Code Blocks -->
+  <div class="code-block">
+    <div class="code-label">MainActivity.java</div>
+    <textarea id="code1" readonly>
+package com.example.phone_calls;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_CALL_PHONE = 1;
+    private EditText editTextPhoneNumber;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        editTextPhoneNumber = findViewById(R.id.editTextPhoneNumber);
+    }
+    public void makePhoneCall(View view) {
+        String phoneNumber = editTextPhoneNumber.getText().toString().trim();
+        if (!phoneNumber.isEmpty()) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.this, new
+                        String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL_PHONE);
+            } else {
+                startPhoneCall(phoneNumber);
+            }
+        } else {
+            Toast.makeText(this, "Please enter a phone number", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void startPhoneCall(String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:" + phoneNumber));
+        startActivity(intent);
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CALL_PHONE) {
+            if (grantResults.length > 0 && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED) {
+                String phoneNumber = editTextPhoneNumber.getText().toString().trim();
+                if (!phoneNumber.isEmpty()) {
+                    startPhoneCall(phoneNumber);
+                } else {
+                    Toast.makeText(this, "Please enter a phone number", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+}
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code1')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">activity_main.xml</div>
+    <textarea id="code2" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+    <EditText
+        android:id="@+id/editTextPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Phone Number"
+        android:inputType="phone" />
+    <Button
+        android:id="@+id/btnCall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Make Phone Call"
+        android:layout_below="@id/editTextPhoneNumber"
+        android:layout_centerHorizontal="true"
+        android:onClick="makePhoneCall" />
+</RelativeLayout>
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code2')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">AndroidManifest</div>
+    <textarea id="code3" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Phone_calls"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code3')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">colors.xml</div>
+    <textarea id="code4" readonly>
+no color
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code4')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">strings.xml</div>
+    <textarea id="code5" readonly>
+no string
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code5')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">build.gradle (Module :app)</div>
+    <textarea id="code6" readonly>
+no build
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code6')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(id) {
+      const codeArea = document.getElementById(id);
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>

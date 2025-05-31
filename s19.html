@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wild Hackers Code Lab</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ffcc;
+      font-family: 'Courier New', monospace;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc;
+      margin-bottom: 40px;
+    }
+
+    .code-block {
+      margin-bottom: 40px;
+    }
+
+    .code-label {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #00ffff;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      background-color: #1a1a1a;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      margin-top: 5px;
+      white-space: pre;
+      overflow-x: auto;
+      resize: none;
+    }
+
+    textarea[readonly] {
+      cursor: default;
+    }
+
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      background-color: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    button:hover {
+      background-color: #00ccaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Wild Hackers Code Lab</h1>
+
+  <!-- Code Blocks -->
+  <div class="code-block">
+    <div class="code-label">MainActivity.java</div>
+    <textarea id="code1" readonly>
+package com.example.sqlite;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+public class MainActivity extends Activity implements View.OnClickListener {
+    EditText editEmpid, editName, editSalary;
+    Button btnAdd, btnDelete, btnModify, btnView, btnViewAll;
+    SQLiteDatabase db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editEmpid = findViewById(R.id.editEmpid);
+        editName = findViewById(R.id.editName);
+        editSalary = findViewById(R.id.editSalary);
+
+        btnAdd = findViewById(R.id.btnAdd);
+        btnDelete = findViewById(R.id.btnDelete);
+        btnModify = findViewById(R.id.btnModify);
+        btnView = findViewById(R.id.btnView);
+        btnViewAll = findViewById(R.id.btnViewAll);
+
+        btnAdd.setOnClickListener(this);
+        btnDelete.setOnClickListener(this);
+        btnModify.setOnClickListener(this);
+        btnView.setOnClickListener(this);
+        btnViewAll.setOnClickListener(this);
+
+        db = openOrCreateDatabase("EmployeeDB", Context.MODE_PRIVATE, null);
+        db.execSQL("CREATE TABLE IF NOT EXISTS employee(empid VARCHAR PRIMARY KEY, name VARCHAR, salary VARCHAR);");
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view == btnAdd) {
+            if (editEmpid.getText().toString().trim().length() == 0 ||
+                    editName.getText().toString().trim().length() == 0 ||
+                    editSalary.getText().toString().trim().length() == 0) {
+                showMessage("Error", "Please enter all values");
+                return;
+            }
+            db.execSQL("INSERT INTO employee VALUES('" + editEmpid.getText() + "','" +
+                    editName.getText() + "','" + editSalary.getText() + "')");
+            showMessage("Success", "Record added");
+            clearText();
+        }
+
+        if (view == btnDelete) {
+            if (editEmpid.getText().toString().trim().length() == 0) {
+                showMessage("Error", "Please enter Employee id");
+                return;
+            }
+            Cursor c = db.rawQuery("SELECT * FROM employee WHERE empid = ?", new String[]{editEmpid.getText().toString()});
+            if (c.moveToFirst()) {
+                db.execSQL("DELETE FROM employee WHERE empid = ?", new String[]{editEmpid.getText().toString()});
+                showMessage("Success", "Record deleted");
+            } else {
+                showMessage("Error", "Invalid Employee ID");
+            }
+            c.close();
+            clearText();
+        }
+
+        if (view == btnModify) {
+            if (editEmpid.getText().toString().trim().length() == 0) {
+                showMessage("Error", "Please enter Employee id");
+                return;
+            }
+            Cursor c = db.rawQuery("SELECT * FROM employee WHERE empid = ?", new String[]{editEmpid.getText().toString()});
+            if (c.moveToFirst()) {
+                db.execSQL("UPDATE employee SET name='" + editName.getText() + "', salary='" + editSalary.getText() + "' WHERE empid='" + editEmpid.getText() + "'");
+                showMessage("Success", "Record modified");
+            } else {
+                showMessage("Error", "Invalid Employee id");
+            }
+            c.close();
+            clearText();
+        }
+
+        if (view == btnView) {
+            String empId = editEmpid.getText().toString().trim();
+            if (empId.length() == 0) {
+                showMessage("Error", "Please enter Employee ID");
+                return;
+            }
+            Cursor c = db.rawQuery("SELECT * FROM employee WHERE empid = ?", new String[]{empId});
+            if (c.moveToFirst()) {
+                editName.setText(c.getString(1));
+                editSalary.setText(c.getString(2));
+            } else {
+                showMessage("Error", "Invalid Employee ID");
+            }
+            c.close();
+        }
+
+        if (view == btnViewAll) {
+            Cursor c = db.rawQuery("SELECT * FROM employee", null);
+            if (c.getCount() == 0) {
+                showMessage("Error", "No records found");
+                return;
+            }
+            StringBuilder buffer = new StringBuilder();
+            while (c.moveToNext()) {
+                buffer.append("Employee id: ").append(c.getString(0)).append("\n");
+                buffer.append("Name: ").append(c.getString(1)).append("\n");
+                buffer.append("Salary: ").append(c.getString(2)).append("\n\n");
+            }
+            showMessage("Employee Details", buffer.toString());
+            c.close();
+        }
+    }
+
+    public void showMessage(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.show();
+    }
+
+    public void clearText() {
+        editEmpid.setText("");
+        editName.setText("");
+        editSalary.setText("");
+        editEmpid.requestFocus();
+    }
+}
+
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code1')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">activity_main.xml</div>
+    <textarea id="code2" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<AbsoluteLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="@string/title"
+        android:layout_x="110dp"
+        android:layout_y="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:text="@string/empid"
+        android:layout_x="30dp"
+        android:layout_y="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/editEmpid"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_x="152dp"
+        android:layout_y="52dp"
+        android:inputType="number"/>
+
+    <TextView
+        android:text="@string/name"
+        android:layout_x="30dp"
+        android:layout_y="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/editName"
+        android:inputType="text"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_x="150dp"
+        android:layout_y="100dp"/>
+
+    <TextView
+        android:text="@string/salary"
+        android:layout_x="30dp"
+        android:layout_y="150dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/editSalary"
+        android:inputType="number"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_x="150dp"
+        android:layout_y="150dp"/>
+
+    <Button
+        android:id="@+id/btnAdd"
+        android:text="@string/add"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_x="30dp"
+        android:layout_y="200dp"/>
+
+    <Button
+        android:id="@+id/btnDelete"
+        android:text="@string/delete"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_x="160dp"
+        android:layout_y="200dp"/>
+
+    <Button
+        android:id="@+id/btnModify"
+        android:text="@string/modify"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_x="30dp"
+        android:layout_y="250dp"/>
+
+    <Button
+        android:id="@+id/btnView"
+        android:text="@string/view"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_x="160dp"
+        android:layout_y="250dp"/>
+
+    <Button
+        android:id="@+id/btnViewAll"
+        android:text="@string/view_all"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_x="85dp"
+        android:layout_y="300dp"/>
+
+</AbsoluteLayout>
+
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code2')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">AndroidManifest</div>
+    <textarea id="code3" readonly>
+no manifest
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code3')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">colors.xml</div>
+    <textarea id="code4" readonly>
+no color
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code4')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">strings.xml</div>
+    <textarea id="code5" readonly>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Employee detail</string>
+    <string name="title">Employee Details</string>
+    <string name="empid">Enter Employee id</string>
+    <string name="name">Enter Name</string>
+    <string name="salary">Enter Salary</string>
+    <string name="add">Add Employee</string>
+    <string name="delete">Delete Employee</string>
+    <string name="modify">Modify Employee</string>
+    <string name="view">View Employee</string>
+    <string name="view_all">View All Employees</string>
+
+    <!-- Add missing strings if you use fragments or menus -->
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
+    <string name="action_settings">Settings</string>
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+</resources>
+
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code5')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">build.gradle (Module :app)</div>
+    <textarea id="code6" readonly>
+no build
+    </textarea>
+    <div class="controls">
+      <button onclick="copyCode('code6')">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(id) {
+      const codeArea = document.getElementById(id);
+      codeArea.select();
+      codeArea.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(codeArea.value);
+    }
+  </script>
+
+</body>
+</html>
