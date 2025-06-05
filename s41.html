@@ -62,7 +62,13 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #control relay using ultrasonic sensors 5
+#control relay using ultrasonic sensors 
+
+# 4 pin RMC one end to G 5v 15 14 ---------- G V T E of the ultrasonic sensor
+# 4 pin RMC one end to G 5v 26 N  ---------- G V S N of the relay  
+
+
+
 
 
 import RPi.GPIO as GPIO
@@ -71,82 +77,64 @@ import time
 # Define GPIO pins
 trigPin = 15
 echoPin = 14
+
 relayPin = 26
 
 def distance():
-    # Trigger a 10us pulse on the trigPin to initiate measurement
     GPIO.output(trigPin, True)
     time.sleep(0.00001)
     GPIO.output(trigPin, False)
 
-    # Wait for echo start
-    pulse_start = time.time()
-    timeout_start = pulse_start
     while GPIO.input(echoPin) == 0:
         pulse_start = time.time()
-        # Timeout in case sensor does not respond
-        if pulse_start - timeout_start > 0.02:  # 20 ms timeout
-            print("Timeout waiting for echo start")
-            return None
 
-    # Wait for echo end
-    pulse_end = time.time()
-    timeout_start = pulse_end
     while GPIO.input(echoPin) == 1:
         pulse_end = time.time()
-        # Timeout in case sensor does not respond
-        if pulse_end - timeout_start > 0.02:  # 20 ms timeout
-            print("Timeout waiting for echo end")
-            return None
 
-    pulse_duration = pulse_end - pulse_start
+    try:
+        pulse_duration = pulse_end - pulse_start
+    except:
+        print("Calibrating")
+        return 2000
 
-    # Calculate distance in cm (speed of sound ~343 m/s)
-    distance_cm = pulse_duration * 17150
-    distance_cm = round(distance_cm + 1.15, 2)  # Calibration offset
+    distance = pulse_duration * 17150
+    
+    distance = round(distance + 1.15, 2)
 
-    return distance_cm
+    return distance
+
 
 def main():
     GPIO.setmode(GPIO.BCM)
-
-    # Set GPIO direction (IN / OUT)
+    # set GPIO direction (IN / OUT)
     GPIO.setup(relayPin, GPIO.OUT)
     GPIO.setup(trigPin, GPIO.OUT)
     GPIO.setup(echoPin, GPIO.IN)
 
-    prevDist = 10  # Arbitrary initial value
 
-    try:
-        while True:
-            dist = distance()
-            if dist is None:
-                # If timeout or error, skip this iteration
-                continue
+# CONTROL RELAY USING ULTRASONIC SENSOR
+prevDist = 10  # Arbitrary Value
 
-            print(f"Measured Distance = {dist} cm")
-
-            # Ignore sudden large changes
-            if abs(dist - prevDist) > 50:
-                prevDist = dist
-                continue
-
-            # Control relay based on distance threshold
-            if dist > 50:
-                GPIO.output(relayPin, GPIO.HIGH)  # Relay ON
-            else:
-                GPIO.output(relayPin, GPIO.LOW)   # Relay OFF
-
-            time.sleep(0.5)
+try:
+    while True:
+        dist = distance()
+        print("Measured Distance = {} cm".format(dist))
+        if (abs(dist - prevDist) > 50):
             prevDist = dist
+            continue
+        if (dist > 50):
+            GPIO.output(relayPin, GPIO.HIGH)
+        else:
+            GPIO.output(relayPin, GPIO.LOW)
+        time.sleep(0.5)
+        prevDist = dist
+except KeyboardInterrupt:
+    print("\nExiting program\n")
+    GPIO.cleanup()
+    exit()
 
-    except KeyboardInterrupt:
-        print("\nExiting program\n")
-        GPIO.cleanup()
-        exit()
+# the relay turn on when the object is less than 50 cm away from the ultrasonic and the relay will turn off if the object is more than 50 cm away from the ultrasonic sensor 
 
-if __name__ == "__main__":
-    main()
 
     
   </textarea>
