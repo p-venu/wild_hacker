@@ -62,7 +62,13 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #creating different led patterns using loops and functions 10
+#creating different led patterns using loops and fucntions 
+
+# 4 pin RMC one end to G 3v3 12 13 ----------- G N v1 v2 of the led3 and led4          in book led1 and led2
+# 4 pin RMC one end to G 3v3 10 11 ----------- G N v1 v2 of the led1 and led2          in book led3 and led4
+
+
+
 
 
 import RPi.GPIO as GPIO
@@ -135,8 +141,12 @@ def main():
         GPIO.cleanup()
         exit()
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": # remove it 
+    main() # try the indend
+
+
+# the led will light up in different sequence depending on the user input 
+
 
     
   </textarea>
