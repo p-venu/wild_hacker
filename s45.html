@@ -62,51 +62,53 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #control mlultiple led based on pc keyboard 9
+#control multiple led based on pc keyboard
+
+# 4 pin RMC one end to G 3v3 12 13 --------- G N v1 v2 of the led1 and led2
+# 4 pin RMC one end to G 3v3 10 11 --------- G N v1 v2 of the led3 and led4
+
 
 
 import RPi.GPIO as GPIO
+import time
 
-GPIO.setmode(GPIO.BCM)  # Use BCM GPIO numbering
-
-# Define LED pins
+GPIO.setmode(GPIO.BCM)
 ledPinOne = 12
 ledPinTwo = 13
 ledPinThree = 10
 ledPinFour = 11
-
-# Set up LED pins as output
 GPIO.setup(ledPinOne, GPIO.OUT)
 GPIO.setup(ledPinTwo, GPIO.OUT)
 GPIO.setup(ledPinThree, GPIO.OUT)
 GPIO.setup(ledPinFour, GPIO.OUT)
-
-def turn_off_all_leds():
-    GPIO.output(ledPinOne, GPIO.LOW)
-    GPIO.output(ledPinTwo, GPIO.LOW)
-    GPIO.output(ledPinThree, GPIO.LOW)
-    GPIO.output(ledPinFour, GPIO.LOW)
-
 try:
     while True:
-        option = input("Enter 1/2/3/4/5 to control LEDs (Ctrl+C to exit): ").strip()
-
-        if option.isdigit():
-            option = int(option)
-        else:
-            print("Invalid input: Please enter a number 1-5")
-            continue
-
-        turn_off_all_leds()
+        option = int(input("Enter 1 / 2 / 3 / 4 / 5: "))
 
         if option == 1:
             GPIO.output(ledPinOne, GPIO.HIGH)
+            GPIO.output(ledPinTwo, GPIO.LOW)
+            GPIO.output(ledPinThree, GPIO.LOW)
+            GPIO.output(ledPinFour, GPIO.LOW)
+
         elif option == 2:
+            GPIO.output(ledPinOne, GPIO.LOW)
             GPIO.output(ledPinTwo, GPIO.HIGH)
+            GPIO.output(ledPinThree, GPIO.LOW)
+            GPIO.output(ledPinFour, GPIO.LOW)
+
         elif option == 3:
+            GPIO.output(ledPinOne, GPIO.LOW)
+            GPIO.output(ledPinTwo, GPIO.LOW)
             GPIO.output(ledPinThree, GPIO.HIGH)
+            GPIO.output(ledPinFour, GPIO.LOW)
+
         elif option == 4:
+            GPIO.output(ledPinOne, GPIO.LOW)
+            GPIO.output(ledPinTwo, GPIO.LOW)
+            GPIO.output(ledPinThree, GPIO.LOW)
             GPIO.output(ledPinFour, GPIO.HIGH)
+
         elif option == 5:
             GPIO.output(ledPinOne, GPIO.HIGH)
             GPIO.output(ledPinTwo, GPIO.HIGH)
@@ -119,6 +121,10 @@ except KeyboardInterrupt:
     print("\nExiting program\n")
     GPIO.cleanup()
     exit()
+
+
+#different leds will glow based on different user inputs between 1-5 
+
 
     
   </textarea>
