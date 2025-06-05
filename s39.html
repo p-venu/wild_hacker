@@ -62,9 +62,14 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #different rgb user input
+#different rgb patterns based on user input 
+
+#4 pin rmc connector connect one end to 10 11 12 13 of the raspberry pi ------- G R Gr B of the RGB LED
+
+
+
+
 import RPi.GPIO as GPIO
-import time
 
 R_LED = 11
 G_LED = 12
@@ -72,21 +77,19 @@ B_LED = 13
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-
-# Setup pins
-for x in [R_LED, G_LED, B_LED]:
+for x in range(10, 14):
     GPIO.setup(x, GPIO.OUT)
 
 try:
     while True:
+
         print("\nEnter one of the following colours:")
         print("Red | Green | Blue")
         print("Magenta | Yellow | Cyan")
         print("White | OFF")
+        colour = input("Enter the colour: ").strip().lower() # strip().lower() is optional 
 
-        colour = input("Enter the colour: ").strip().lower()
-
-        if colour == "red":
+        if colour == "red": # if not executed put colour.lower()
             GPIO.output(R_LED, GPIO.HIGH)
             GPIO.output(G_LED, GPIO.LOW)
             GPIO.output(B_LED, GPIO.LOW)
@@ -133,6 +136,9 @@ except KeyboardInterrupt:
     print("\nExiting program\n")
     GPIO.cleanup()
     exit()
+
+
+#the RGB changing colours based on user input 
 
     
   </textarea>
