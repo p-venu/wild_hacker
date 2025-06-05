@@ -62,7 +62,11 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #controlling brightness of led using pwm 4
+#controlling brightness of led using pwm
+
+#4 pin RMC one end to G 3v3 18 19 --------- G N v1 v2 of the led1 and led2
+
+
 
 
 import RPi.GPIO as GPIO
@@ -79,20 +83,23 @@ pwm.start(0)                  # Start PWM with 0% duty cycle (LED off)
 
 try:
     while True:
-        # Gradually increase brightness (0% to 99%)
-        for duty_cycle in range(100):
-            pwm.ChangeDutyCycle(duty_cycle)
-            time.sleep(0.02)  # Adjusted to 0.02s for smoother transition
-        
-        # Gradually decrease brightness (100% to 1%)
-        for duty_cycle in range(100, 0, -1):
-            pwm.ChangeDutyCycle(duty_cycle)
-            time.sleep(0.02)  # Same smoother timing
+        for i in range(100):
+            pwm.ChangeDutyCycle(i)
+            time.sleep(0.2)  # Adjusted to 0.02s for smoother transition
+        for i in range(100, 0, -1):
+            pwm.ChangeDutyCycle(i)
+            time.sleep(0.2)  # Same smoother timing
 
 except KeyboardInterrupt:
     pwm.stop()               # Stop PWM
     print("\nExiting program\n")
     GPIO.cleanup()           # Clean up GPIO pins
+    exit()
+    
+    
+# the led go from OFF state to slowly increasing brightness until maximum. the led will slowly start dimming and go back to the OFF state
+
+
 
     
   </textarea>
