@@ -62,20 +62,25 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #control led brightness bu sending pwm values using mqtt 8
+#control led brightness by sending pwm values using mqtt
+
+# 4 pin RMC one end to G 3v3 6 7 ---------- G N v1 v1 v2 of led1
+
+#IOTIF MQTT // mqtt/tcp //broker.hivemq.com:1883
+#IOTIF/Rpi  //                  ----------subscribe     TOTIF/RPi/PWM
+#IOTIF/RPi  // 55  ( 1 to 100 ) ----------publisher
+
+
 
 
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 
 ledPin = 6
-
 GPIO.setmode(GPIO.BCM)          # Use BCM pin numbering
 GPIO.setup(ledPin, GPIO.OUT)    # Set pin as output
-
 pwm = GPIO.PWM(ledPin, 100)     # Initialize PWM at 100Hz
 pwm.start(0)                    # Start PWM with 0% duty cycle (LED off)
-
 # MQTT connect callback
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code", str(rc))
@@ -83,33 +88,28 @@ def on_connect(client, userdata, flags, rc):
 
 # MQTT message callback
 def on_message(client, userdata, message):
-    data = message.payload.decode("utf-8").strip()
-    print(f"Data received on topic: {message.topic} - Message: {data}")
+    data = str(message.payload.decode("utf-8")).strip()
+    print("Data received on topic: ",message.topic," - Message: ",data)
 
-    try:
-        duty_cycle = int(data)
-        if 0 <= duty_cycle <= 100:
-            pwm.ChangeDutyCycle(duty_cycle)
-            print(f"LED brightness set to {duty_cycle}%")
-        else:
-            print("Error: PWM value must be between 0 and 100")
-    except ValueError:
-        print("Error: Invalid PWM value received, must be an integer")
 
-# MQTT client setup
+    pwm.ChangeDutyCycle(int(data))
+
 client = mqtt.Client()
+client.connect("broker.hivemq.com")
+
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("broker.hivemq.com")
-
 try:
-    print("Starting MQTT client loop. Press Ctrl+C to exit.")
     client.loop_forever()
 except KeyboardInterrupt:
     print("\nExiting the program\n")
-    pwm.stop()
     GPIO.cleanup()
+    exit()
+
+
+#sending different values of duty cycle from mqtt box , the brightness of the led will be changing 
+
 
     
   </textarea>
