@@ -62,74 +62,55 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #publishing dht sensor value to web page using mqtt 7
+#publishing dht sensor value to web page using mqtt 
+
+# 4 pin RMC one end to G 5v 26 N --------- G V S N of the DHT11
+
+#IOTIF MQTT // mqtt/tcp //broker.hivemq.com:1883
+#IOTIF/Rpi  //            ----------subscribe
+#IOTIF/RPi  // Hello World----------publisher       --temperature humidity --IOTIF/RPI/DHT
 
 
 import RPi.GPIO as GPIO
+import paho.mqtt.client as mqtt
+import Adafruit_DHT
 import time
 
-R = 11
-G = 12
-B = 13
+publishTopic = "IOTIF/RPI/DHT"
+sensor = Adafruit_DHT.DHT11
+sensorPin = 26
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code", str(rc))
 
-GPIO.setup(R, GPIO.OUT)
-GPIO.setup(G, GPIO.OUT)
-GPIO.setup(B, GPIO.OUT)
+client = mqtt.Client()
+client.connect("broker.hivemq.com")
 
-# Set PWM at 1000Hz for smooth fading
-pwmR = GPIO.PWM(R, 1000)
-pwmG = GPIO.PWM(G, 1000)
-pwmB = GPIO.PWM(B, 1000)
-
-pwmR.start(0)
-pwmG.start(0)
-pwmB.start(0)
-
-def set_color(red, green, blue):
-    """Set RGB LED color using duty cycle percentages (0-100)."""
-    pwmR.ChangeDutyCycle(100 - red)   # Inverted for common-anode RGB LED
-    pwmG.ChangeDutyCycle(100 - green)
-    pwmB.ChangeDutyCycle(100 - blue)
+client.on_connect = on_connect
 
 try:
     while True:
-        print("\nChoose a color by typing:")
-        print("Red | Green | Blue | Yellow | Cyan | Magenta | White | Custom | Off")
-        choice = input("Enter color: ").strip().lower()
+        humidity, temperature = Adafruit_DHT.read_retry(sensor, sensorPin)
 
-        if choice == "red":
-            set_color(100, 0, 0)
-        elif choice == "green":
-            set_color(0, 100, 0)
-        elif choice == "blue":
-            set_color(0, 0, 100)
-        elif choice == "yellow":
-            set_color(100, 100, 0)
-        elif choice == "cyan":
-            set_color(0, 100, 100)
-        elif choice == "magenta":
-            set_color(100, 0, 100)
-        elif choice == "white":
-            set_color(100, 100, 100)
-        elif choice == "off":
-            set_color(0, 0, 0)
-        elif choice == "custom":
-            r = int(input("Red (0-100): "))
-            g = int(input("Green (0-100): "))
-            b = int(input("Blue (0-100): "))
-            set_color(r, g, b)
-        else:
-            print("Invalid input. Try again.")
+        if humidity is not None and temperature is not None:
+            msg = "{},{}".format(humidity, temperature)
+            client.publish(publishTopic, msg)
+
+        client.loop()
+        time.sleep(5)
 
 except KeyboardInterrupt:
-    print("\nExiting program\n")
-    pwmR.stop()
-    pwmG.stop()
-    pwmB.stop()
+    print("\nExiting the program\n")
     GPIO.cleanup()
+    exit()
+
+
+
+
+# on receiving temperature and humidity, the respective values will be updated on the webpage 
+
+
+
 
     
   </textarea>
