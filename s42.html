@@ -62,7 +62,20 @@
   <h1>Wild Hackers Code Lab</h1>
 
   <textarea id="codeArea" readonly>
-    #controlling actuators using mqtt 6
+#controlling actuators using mqtt
+
+# 4 pin RMC one end to G 5v 26 N ---------- G V S N of the relay 
+
+
+#IOTIF MQTT // mqtt/tcp //broker.hivemq.com:1883
+#IOTIF/Rpi  //            ----------subscribe             #no
+#IOTIF/RPi  // Hello World----------publisher
+
+#IOTIF MQTT // mqtt/tcp //broker.hivemq.com:1883
+#IOTIF/Rpi  //            ----------subscribe             #yes
+#IOTIF/RPi  // on (or) ON ( only ON or OFF ) ----------publisher
+
+
 
 
 import paho.mqtt.client as mqtt
@@ -73,15 +86,13 @@ relayPin = 26
 GPIO.setmode(GPIO.BCM)  # Using BCM pin numbering
 GPIO.setup(relayPin, GPIO.OUT)
 
-# Called when the client connects to the MQTT broker
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc): # use spaces after thye user data 
     print("Connected with result code", str(rc))
-    client.subscribe("IOTIF/RPI")  # Subscribe to topic
+    client.subscribe("IOTIF/RPi")  # Subscribe to topic
 
-# Called when a message is received on a subscribed topic
 def on_message(client, userdata, message):
     data = str(message.payload.decode("utf-8")).strip()
-    print(f"Data received on topic: {message.topic} | Message: {data}")
+    print("Data received on topic: ",message.topic," | Message: ",data)
 
     if data.upper() == "ON":
         GPIO.output(relayPin, True)
@@ -92,21 +103,22 @@ def on_message(client, userdata, message):
     else:
         print("Invalid command. Try sending ON or OFF")
 
-# MQTT client setup
 client = mqtt.Client()
+client.connect("broker.hivemq.com")
 
 client.on_connect = on_connect
 client.on_message = on_message
 
-# Connect to public HiveMQ broker
-client.connect("broker.hivemq.com")
-
 try:
-    print("Starting MQTT client loop. Press Ctrl+C to exit.")
     client.loop_forever()
 except KeyboardInterrupt:
     print("\nExiting the program\n")
     GPIO.cleanup()
+    exit()
+
+
+
+#sending ON from MQTT box will turn on the relay and sending OFF it turn off . all messages received from MQtt should be displayed on the terminal
 
     
   </textarea>
